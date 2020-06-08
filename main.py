@@ -11,7 +11,7 @@ import tensorflow as tf
 
 def main(arg):
     os.environ["CUDA_VISIBLE_DEVICES"] = str(arg.gpu)
-    model_save_dir = "../experiments/" + arg.name + "/"
+    model_save_dir = "./experiments/" + arg.name + "/"
 
     with tf.variable_scope("Data_prep"):
         if arg.mode == 'train':
@@ -58,7 +58,7 @@ def main(arg):
                 write_hyperparameters(arg.toDict(), model_save_dir)
                 sess.run(tf.global_variables_initializer())
 
-            writer = tf.summary.FileWriter("../summaries/" + arg.name, graph=sess.graph)
+            writer = tf.summary.FileWriter("./summaries/" + arg.name, graph=sess.graph)
 
         elif arg.mode == 'predict':
             ckpt, ctr = find_ckpt(model_save_dir + 'saved_model/')
@@ -66,6 +66,7 @@ def main(arg):
 
         initialize_uninitialized(sess)
         while True:
+            print('iteration %d' %ctr)
             try:
                 feed = transformation_parameters(arg, ctr, no_transform=(arg.mode == 'predict'))  # no transform if arg.visualize
                 trf = {scal: feed.scal, tps_scal: feed.tps_scal,

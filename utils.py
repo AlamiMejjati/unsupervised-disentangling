@@ -218,8 +218,8 @@ def part_to_color_map(encoding_list, part_depths, size, square=True, ):
 
 
 def save_python_files(save_dir):
-    assert (not os.path.exists(save_dir))
-    os.makedirs(save_dir)
+    # assert (not os.path.exists(save_dir))
+    os.makedirs(save_dir, exist_ok=True)
     for file in glob.glob("*.py"):
         copyfile(src=file, dst=save_dir + file)
 

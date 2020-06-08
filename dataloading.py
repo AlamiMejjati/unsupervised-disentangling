@@ -11,6 +11,7 @@ import numpy as np
 
 def preprocess_image(image):
   image = tf.image.decode_jpeg(image, channels=3)
+  image = tf.image.resize(image, [256,256])
   image = tf.cast(image, dtype=tf.float32)
   image = image / 255.
   return image
@@ -29,7 +30,7 @@ def chunks(l, n):
         yield elem
 
 
-def load_train_human3m(arg, path='../datasets/human3/train/'):
+def load_train_human3m(arg, path='./datasets/human3/train/'):
     """
     creates tf.dataset from the human3m video dataset with the following folder structure on disk:
     human3
@@ -78,7 +79,7 @@ def load_train_human3m(arg, path='../datasets/human3/train/'):
     return raw_dataset
 
 
-def load_test_human3m(arg, path='../datasets/human3/test/'):
+def load_test_human3m(arg, path='./datasets/human3/test/'):
     chunk_size = 2
     vids = [f for f in glob.glob(path + "*/*", recursive=True)]
     frames = []
@@ -93,16 +94,21 @@ def load_test_human3m(arg, path='../datasets/human3/test/'):
     return raw_dataset
 
 
-def load_train_generic(arg, '../datasets/generic/train_images/'):
+def load_train_generic(arg, path ='./datasets/giraffe_cs_fg/train_images/'):
     frames = glob.glob(path + "*.jpg", recursive=True)
+    if len(frames)==0:
+        frames = glob.glob(path + "*.png", recursive=True)
+
     frames = np.asarray(frames).reshape(-1, 1)
     raw_dataset = tf.data.Dataset.from_tensor_slices(frames)\
         .flat_map(lambda x: tf.data.Dataset.from_tensor_slices(x)).shuffle(arg.n_shuffle, reshuffle_each_iteration=True)
     return raw_dataset
 
 
-def load_test_generic(arg, path='../datasets/generic/test_images/'):
+def load_test_generic(arg, path='./datasets/giraffe_cs_fg/test_images/'):
     frames = glob.glob(path + "*.jpg", recursive=True)
+    if len(frames)==0:
+        frames = glob.glob(path + "*.png", recursive=True)
     frames = np.asarray(frames).reshape(-1, 1)
     raw_dataset = tf.data.Dataset.from_tensor_slices(frames)\
         .flat_map(lambda x: tf.data.Dataset.from_tensor_slices(x))
